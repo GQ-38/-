@@ -4,28 +4,21 @@ const statusMap = {
   sold: "已卖出"
 };
 
-const MAX_IMAGES_PER_ITEM = 20;
+const MAX_IMAGES_PER_ITEM = 30;
 
-let shopInfo = structuredClone(window.SHOP_INFO || {
+let fileShopInfo = structuredClone(window.SHOP_INFO || {
   title: "校园二手闲置",
   description: "个人闲置书籍、学习资料和桌面小配件，状态实时更新。",
   address: "西华大学德馨苑2号楼下",
   qq: "1474349048",
-  phone: "请填写你的电话号码"
+  phone: ""
 });
 
-let items = structuredClone(Array.isArray(window.ITEMS) ? window.ITEMS : []);
+let fileItems = structuredClone(Array.isArray(window.ITEMS) ? window.ITEMS : []);
+let shopInfo = structuredClone(fileShopInfo);
+let items = structuredClone(fileItems);
 let editingId = null;
 let selectedPhotoData = [];
-
-try {
-  const localItems = localStorage.getItem("secondHandItemsPreview");
-  const localShop = localStorage.getItem("secondHandShopPreview");
-  if (localItems) items = JSON.parse(localItems);
-  if (localShop) shopInfo = JSON.parse(localShop);
-} catch (error) {
-  alert("读取本机预览数据失败，将使用 data/items.js。");
-}
 
 const $ = id => document.getElementById(id);
 
@@ -70,9 +63,19 @@ function readShopForm() {
   };
 }
 
+function currentItemCountText() {
+  return `当前编辑列表：${items.length} 件商品。数据来源：${window.__DATA_SOURCE_TIP || "data/items.js"}`;
+}
+
+function updateDataSourceTip() {
+  $("dataSourceTip").textContent = currentItemCountText();
+}
+
 function renderPreviewList() {
   const list = $("previewList");
   list.innerHTML = "";
+  updateDataSourceTip();
+
   if (!items.length) {
     list.innerHTML = `<p class="empty">还没有商品，请从左侧添加。</p>`;
     return;
@@ -92,7 +95,7 @@ function renderPreviewList() {
       <div>
         <h4>${escapeText(item.title)} · ￥${escapeText(item.price)}</h4>
         <p>${escapeText(item.category || "其他")}｜${statusMap[item.status] || "在售"}｜浏览 ${Number(item.views || 0)} 次｜图片 ${(item.images || []).length} 张</p>
-        <p>${escapeText((item.description || "").slice(0, 45))}${(item.description || "").length > 45 ? "..." : ""}</p>
+        <p>${escapeText((item.description || "").slice(0, 60))}${(item.description || "").length > 60 ? "..." : ""}</p>
         <div class="actions">
           <button class="soft-btn" data-edit="${escapeText(item.id)}">编辑</button>
           <button class="danger-btn" data-delete="${escapeText(item.id)}">删除</button>
@@ -215,10 +218,11 @@ function saveItem() {
     items.unshift(item);
   }
 
+  window.__DATA_SOURCE_TIP = "本机编辑列表，尚未导出";
   renderPreviewList();
   savePreview(false);
   resetForm();
-  alert("已保存商品。打开首页可以本机预览，确认后记得导出 data/items.js。");
+  alert("已保存商品。打开 index.html?preview=1 可以本机预览；确认后请导出 data/items.js 并上传到 GitHub。");
 }
 
 function savePreview(showAlert = true) {
@@ -226,7 +230,9 @@ function savePreview(showAlert = true) {
   try {
     localStorage.setItem("secondHandShopPreview", JSON.stringify(shopInfo));
     localStorage.setItem("secondHandItemsPreview", JSON.stringify(items));
-    if (showAlert) alert("已保存到本机预览。现在打开 index.html 可以看到效果。");
+    window.__DATA_SOURCE_TIP = "本机预览 localStorage";
+    updateDataSourceTip();
+    if (showAlert) alert("已保存到本机预览。现在打开 index.html?preview=1 可以看到本机预览效果。");
   } catch (error) {
     alert("保存失败：图片可能太多或太大。请删除几张图片，或降低图片数量后再试。");
   }
@@ -236,8 +242,20 @@ function clearPreview() {
   if (!confirm("确定清除本机预览吗？这不会删除 data/items.js，只会清空浏览器里的临时修改。")) return;
   localStorage.removeItem("secondHandShopPreview");
   localStorage.removeItem("secondHandItemsPreview");
-  alert("已清除。本页将刷新。");
-  location.reload();
+  reloadFromFile(false);
+  alert("已清除本机预览，并重新读取 data/items.js。");
+}
+
+function reloadFromFile(ask = true) {
+  if (ask && !confirm("确定用当前 data/items.js 重新读取吗？这会覆盖本机预览里的未导出修改。")) return;
+  shopInfo = structuredClone(fileShopInfo);
+  items = structuredClone(fileItems);
+  editingId = null;
+  selectedPhotoData = [];
+  window.__DATA_SOURCE_TIP = "data/items.js";
+  fillShopForm();
+  resetForm();
+  renderPreviewList();
 }
 
 function exportDataFile() {
@@ -364,7 +382,6 @@ function handlePaste(event) {
     return;
   }
 
-  // 有些浏览器会把图片作为 files 暴露
   if (clipboardData.files && clipboardData.files.length) {
     event.preventDefault();
     addImageFiles(clipboardData.files, "剪贴板");
@@ -423,6 +440,7 @@ function initUploadZone() {
 }
 
 function init() {
+  window.__DATA_SOURCE_TIP = "data/items.js";
   fillShopForm();
   renderPreviewList();
   renderPhotoThumbs();
@@ -432,6 +450,7 @@ function init() {
   $("savePreview").onclick = () => savePreview(true);
   $("clearPreview").onclick = clearPreview;
   $("exportFile").onclick = exportDataFile;
+  $("reloadFromFile").onclick = () => reloadFromFile(true);
   $("itemPhotos").onchange = handlePhotos;
 
   initUploadZone();
