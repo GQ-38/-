@@ -54,8 +54,13 @@
       <div id="modalBody"></div>
     </div>
   </div>
-
-  <script src="data/items.js"></script>
-  <script src="app.js"></script>
+  <script>
+    // 强制每次读取最新的 data/items.js 和 app.js，避免手机浏览器/GitHub Pages 缓存旧文件。
+    (function () {
+      var v = Date.now();
+      document.write('<script src="data/items.js?v=' + v + '"><\/script>');
+      document.write('<script src="app.js?v=' + v + '"><\/script>');
+    })();
+  </script>
 </body>
 </html>
