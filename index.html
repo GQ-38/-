@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>校园二手闲置</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="hero">
+    <div>
+      <p class="eyebrow">西华大学 · 校园自提</p>
+      <h1 id="siteTitle">校园二手闲置</h1>
+      <p id="siteDesc" class="hero-desc">个人闲置书籍、学习资料和桌面小配件，状态实时更新。</p>
+      <div class="contact-bar">
+        <span id="addressText">自提地点：西华大学德馨苑2号楼下</span>
+        <button id="copyQQ" class="ghost-btn">复制 QQ</button>
+        <button id="copyPhone" class="ghost-btn">复制电话</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="toolbar">
+      <input id="searchInput" type="search" placeholder="搜索书名、配件、关键词..." />
+      <select id="categoryFilter">
+        <option value="all">全部分类</option>
+      </select>
+      <select id="statusFilter">
+        <option value="all">全部状态</option>
+        <option value="available">在售</option>
+        <option value="reserved">已预定</option>
+        <option value="sold">已卖出</option>
+      </select>
+    </section>
+
+    <section class="notice">
+      <strong>说明：</strong>物品以页面状态为准；显示“已卖出”的物品请勿重复咨询。建议校内自提，现场验货。
+    </section>
+
+    <section id="itemsGrid" class="grid"></section>
+    <p id="emptyText" class="empty hidden">没有找到符合条件的物品。</p>
+  </main>
+
+  <footer class="footer">
+    <p>联系 QQ：<span id="qqText">1474349048</span> ｜ 电话：<span id="phoneText">请填写你的电话号码</span></p>
+    <p>自提地点：<span id="footerAddress">西华大学德馨苑2号楼下</span></p>
+    <p class="small">管理商品请打开 <a href="admin.html">admin.html</a>。纯静态版本不会自动写入服务器，需要导出并重新上传数据文件。</p>
+  </footer>
+
+  <div id="modal" class="modal hidden" role="dialog" aria-modal="true">
+    <div class="modal-card">
+      <button id="closeModal" class="close-btn">×</button>
+      <div id="modalBody"></div>
+    </div>
+  </div>
+
+  <script src="data/items.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

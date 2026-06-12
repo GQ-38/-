@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>商品管理 - 校园二手闲置</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="admin-header">
+    <div class="admin-header-inner">
+      <h1>商品管理页</h1>
+      <p>可以直接在这里添加、修改、删除商品。图片支持本地多选、拖拽上传、剪贴板粘贴上传。</p>
+      <p><a href="index.html">返回首页预览</a></p>
+    </div>
+  </header>
+
+  <main class="admin-layout">
+    <section class="panel">
+      <h2>店铺信息</h2>
+      <div class="form-grid">
+        <label>网站标题
+          <input id="shopTitle" placeholder="校园二手闲置">
+        </label>
+        <label>网站介绍
+          <textarea id="shopDesc" placeholder="个人闲置书籍、学习资料和桌面小配件"></textarea>
+        </label>
+        <label>自提地点
+          <input id="shopAddress" placeholder="西华大学德馨苑2号楼下">
+        </label>
+        <div class="row">
+          <label>QQ
+            <input id="shopQQ" placeholder="1474349048">
+          </label>
+          <label>电话
+            <input id="shopPhone" placeholder="你的手机号">
+          </label>
+        </div>
+      </div>
+
+      <hr>
+
+      <h2 id="formTitle">添加商品</h2>
+      <div class="form-grid">
+        <label>物品名称
+          <input id="itemTitle" placeholder="例如：高等数学第七版上册">
+        </label>
+        <div class="row">
+          <label>分类
+            <input id="itemCategory" placeholder="书籍 / 桌面部件">
+          </label>
+          <label>状态
+            <select id="itemStatus">
+              <option value="available">在售</option>
+              <option value="reserved">已预定</option>
+              <option value="sold">已卖出</option>
+            </select>
+          </label>
+        </div>
+        <div class="row">
+          <label>售价
+            <input id="itemPrice" type="number" min="0" step="1" placeholder="15">
+          </label>
+          <label>原价，可不填
+            <input id="itemOriginalPrice" type="number" min="0" step="1" placeholder="45">
+          </label>
+        </div>
+        <label>成色
+          <input id="itemCondition" placeholder="八成新 / 有少量笔记 / 正常使用痕迹">
+        </label>
+        <label>简介
+          <textarea id="itemDescription" placeholder="写清楚物品情况、适合谁、是否有瑕疵等"></textarea>
+        </label>
+        <label>浏览次数，可不改
+          <input id="itemViews" type="number" min="0" step="1" value="0">
+        </label>
+
+        <div class="upload-section">
+          <div class="upload-title">商品图片</div>
+
+          <input id="itemPhotos" class="hidden-file-input" type="file" accept="image/*" multiple>
+
+          <div id="pasteUploadZone" class="paste-upload-zone" tabindex="0">
+            <div class="paste-icon">📷</div>
+            <strong>点击这里选择图片，或按 Ctrl+V 直接粘贴图片</strong>
+            <p>支持：本地多选、截图粘贴、复制图片后粘贴、拖拽多张图片到这里</p>
+            <div class="actions">
+              <button id="choosePhotosBtn" type="button" class="soft-btn">选择本地图片</button>
+              <button id="clearPhotosBtn" type="button" class="danger-btn">清空当前图片</button>
+            </div>
+          </div>
+
+          <div class="upload-tips">
+            已选 <span id="photoCount">0</span> 张图片。可以分多次添加；每张图会自动压缩，减少网页体积。
+          </div>
+
+          <div id="photoThumbs" class="photo-thumbs"></div>
+        </div>
+
+        <label>或者填写图片路径，可不填
+          <textarea id="itemImagePaths" placeholder="例如：images/book-1.jpg&#10;images/book-2.jpg"></textarea>
+        </label>
+
+        <div class="actions">
+          <button id="saveItem" class="primary-btn">保存这个商品</button>
+          <button id="resetForm" class="soft-btn">清空表单</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>当前商品</h2>
+      <div class="help-box">
+        <strong>最省事流程：</strong><br>
+        1. 在左边添加/修改商品。<br>
+        2. 图片可以点“选择本地图片”，也可以复制图片后在图片框里 Ctrl+V 粘贴。<br>
+        3. 点击“保存到本机预览”。<br>
+        4. 打开首页确认没问题。<br>
+        5. 点击“导出 data/items.js”。<br>
+        6. 用导出的文件替换网站里的 <code>data/items.js</code>，然后重新上传网站文件夹。
+      </div>
+      <div class="actions">
+        <button id="savePreview" class="soft-btn">保存到本机预览</button>
+        <button id="exportFile" class="primary-btn">导出 data/items.js</button>
+        <button id="clearPreview" class="danger-btn">清除本机预览</button>
+      </div>
+      <p class="small">注意：纯静态网站不能自动写入线上服务器。管理页能帮你少改代码，但最终仍要上传导出的文件。</p>
+      <div id="previewList" class="preview-list"></div>
+    </section>
+  </main>
+
+  <script src="data/items.js"></script>
+  <script src="admin.js"></script>
+</body>
+</html>
