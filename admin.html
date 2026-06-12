@@ -10,8 +10,8 @@
   <header class="admin-header">
     <div class="admin-header-inner">
       <h1>商品管理页</h1>
-      <p>可以直接在这里添加、修改、删除商品。图片支持本地多选、拖拽上传、剪贴板粘贴上传。</p>
-      <p><a href="index.html">返回首页预览</a></p>
+      <p>当前管理页已基于最新 <code>data/items.js</code> 更新。可以直接添加、修改、删除商品，图片支持本地多选、拖拽上传、剪贴板粘贴上传。</p>
+      <p><a href="index.html">返回正式首页</a> ｜ <a href="index.html?preview=1">打开本机预览首页</a></p>
     </div>
   </header>
 
@@ -33,7 +33,7 @@
             <input id="shopQQ" placeholder="1474349048">
           </label>
           <label>电话
-            <input id="shopPhone" placeholder="你的手机号">
+            <input id="shopPhone" placeholder="你的手机号，可以不填">
           </label>
         </div>
       </div>
@@ -47,7 +47,7 @@
         </label>
         <div class="row">
           <label>分类
-            <input id="itemCategory" placeholder="书籍 / 桌面部件">
+            <input id="itemCategory" placeholder="书籍 / 桌面部件 / 绘图工具">
           </label>
           <label>状态
             <select id="itemStatus">
@@ -59,10 +59,10 @@
         </div>
         <div class="row">
           <label>售价
-            <input id="itemPrice" type="number" min="0" step="1" placeholder="15">
+            <input id="itemPrice" type="number" min="0" step="0.1" placeholder="5">
           </label>
           <label>原价，可不填
-            <input id="itemOriginalPrice" type="number" min="0" step="1" placeholder="45">
+            <input id="itemOriginalPrice" type="number" min="0" step="0.1" placeholder="45">
           </label>
         </div>
         <label>成色
@@ -112,18 +112,21 @@
       <h2>当前商品</h2>
       <div class="help-box">
         <strong>最省事流程：</strong><br>
-        1. 在左边添加/修改商品。<br>
-        2. 图片可以点“选择本地图片”，也可以复制图片后在图片框里 Ctrl+V 粘贴。<br>
-        3. 点击“保存到本机预览”。<br>
-        4. 打开首页确认没问题。<br>
-        5. 点击“导出 data/items.js”。<br>
-        6. 用导出的文件替换网站里的 <code>data/items.js</code>，然后重新上传网站文件夹。
+        1. 先点“从 data/items.js 重新读取”，确保编辑列表是最新线上数据。<br>
+        2. 在左边添加/修改商品。<br>
+        3. 图片可以点“选择本地图片”，也可以复制图片后在图片框里 Ctrl+V 粘贴。<br>
+        4. 点击“保存到本机预览”。<br>
+        5. 打开 <code>index.html?preview=1</code> 确认没问题。<br>
+        6. 点击“导出 data/items.js”。<br>
+        7. 用导出的文件替换 GitHub 仓库里的 <code>data/items.js</code>。
       </div>
       <div class="actions">
+        <button id="reloadFromFile" class="soft-btn">从 data/items.js 重新读取</button>
         <button id="savePreview" class="soft-btn">保存到本机预览</button>
         <button id="exportFile" class="primary-btn">导出 data/items.js</button>
         <button id="clearPreview" class="danger-btn">清除本机预览</button>
       </div>
+      <p id="dataSourceTip" class="small"></p>
       <p class="small">注意：纯静态网站不能自动写入线上服务器。管理页能帮你少改代码，但最终仍要上传导出的文件。</p>
       <div id="previewList" class="preview-list"></div>
     </section>
