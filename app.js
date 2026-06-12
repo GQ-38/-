@@ -14,18 +14,25 @@ function getShopInfo() {
   };
 }
 
+function isPreviewMode() {
+  const params = new URLSearchParams(location.search);
+  return params.get("preview") === "1";
+}
+
 function getItems() {
-  // 管理页保存到浏览器后，首页本机预览会优先使用本地版本。
-  // 真正给别人看时，请用管理页导出 data/items.js 并重新上传。
-  try {
-    const local = localStorage.getItem("secondHandItemsPreview");
-    const localShop = localStorage.getItem("secondHandShopPreview");
-    if (local) {
-      window.SHOP_INFO = localShop ? JSON.parse(localShop) : getShopInfo();
-      return JSON.parse(local);
+  // 正式访问 index.html 时，永远使用 GitHub 上的 data/items.js。
+  // 只有打开 index.html?preview=1 时，才读取 admin.html 保存的本机预览。
+  if (isPreviewMode()) {
+    try {
+      const local = localStorage.getItem("secondHandItemsPreview");
+      const localShop = localStorage.getItem("secondHandShopPreview");
+      if (local) {
+        window.SHOP_INFO = localShop ? JSON.parse(localShop) : getShopInfo();
+        return JSON.parse(local);
+      }
+    } catch (error) {
+      console.warn("本机预览数据读取失败，已使用 data/items.js", error);
     }
-  } catch (error) {
-    console.warn("本地预览数据读取失败，已使用 data/items.js", error);
   }
   return Array.isArray(window.ITEMS) ? window.ITEMS : [];
 }
@@ -70,6 +77,7 @@ function renderShopInfo() {
 
 function renderCategoryOptions() {
   const select = document.getElementById("categoryFilter");
+  select.innerHTML = `<option value="all">全部分类</option>`;
   const categories = [...new Set(allItems.map(item => item.category).filter(Boolean))];
   for (const category of categories) {
     const option = document.createElement("option");
@@ -129,11 +137,14 @@ function openDetail(id) {
   const item = allItems.find(x => x.id === id);
   if (!item) return;
 
-  // 纯静态不能给所有人真实累加浏览次数，只在本机预览加 1。
-  item.views = Number(item.views || 0) + 1;
-  try {
-    localStorage.setItem("secondHandItemsPreview", JSON.stringify(allItems));
-  } catch {}
+  // 正式页面不再写入 localStorage，避免手机保存旧数据。
+  // 只有本机预览模式才临时增加浏览次数。
+  if (isPreviewMode()) {
+    item.views = Number(item.views || 0) + 1;
+    try {
+      localStorage.setItem("secondHandItemsPreview", JSON.stringify(allItems));
+    } catch {}
+  }
 
   const shop = getShopInfo();
   const modal = document.getElementById("modal");
